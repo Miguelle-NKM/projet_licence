@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion du Menu - Hôtel geogia</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Configuration personnalisée de Tailwind pour les couleurs */
+        :root {
+            --color-primary-blue: #1555dfff; /* Un bleu profond */
+            --color-light-blue: #BFDBFE; /* Un bleu plus clair */
+            --color-white: #FFFFFF;
+            --color-gray-100: #F3F4F6;
+            --color-gray-800: #1F2937;
+            --color-accent-orange: #F59E0B; /* Un orange pour les accents */
+            --color-accent-orange-dark: #D97706; /* Orange plus foncé pour le survol */
+        }
+
+        .bg-primary-blue { background-color: var(--color-primary-blue); }
+        .text-primary-blue { color: var(--color-primary-blue); }
+        .bg-light-blue { background-color: var(--color-light-blue); }
+        .text-light-blue { color: var(--color-light-blue); }
+        .bg-white { background-color: var(--color-white); }
+        .text-white { color: var(--color-white); }
+        .bg-gray-100 { background-color: var(--color-gray-100); }
+        .text-gray-800 { color: var(--color-gray-800); }
+        .bg-accent-orange { background-color: var(--color-accent-orange); }
+        .hover\:bg-accent-orange-dark:hover { background-color: var(--color-accent-orange-dark); }
+        .text-accent-orange { color: var(--color-accent-orange); }
+
+        /* Custom styles for Inter font and general aesthetics */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-gray-100); /* Light blue-gray background */
+            color: var(--color-gray-800); /* Dark gray text */
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .card {
+            background-color: var(--color-white);
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        .btn-primary {
+            background-color: var(--color-accent-orange); /* Indigo */
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .btn-primary:hover {
+            background-color: var(--color-accent-orange-dark); /* Darker Indigo */
+            transform: translateY(-2px);
+        }
+        input[type="text"], input[type="number"], input[type="url"], textarea, select, input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            border: 1px solid #cbd5e0; /* Light gray border */
+            border-radius: 6px;
+            box-sizing: border-box;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        input[type="text"]:focus, input[type="number"]:focus, input[type="url"]:focus, textarea:focus, select:focus, input[type="file"]:focus {
+            outline: none;
+            border-color: var(--color-primary-blue); /* Indigo on focus */
+            box-shadow: 0 0 0 3px rgba(108, 145, 223, 0.2); /* Light primary blue shadow */
+        }
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1000; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0,0,0,0.5); /* Black w/ opacity */
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.4);
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+            position: relative;
+        }
+        .close-button {
+            color: #a0aec0; /* Light gray */
+            position: absolute;
+            top: 15px;
+            right: 25px;
+            font-size: 30px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close-button:hover,
+        .close-button:focus {
+            color: var(--color-gray-800); /* Dark gray */
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+    <!-- Header -->
+    <header class="bg-primary-blue shadow-lg py-4">
+        <div class="container mx-auto text-center">
+            <h1 class="text-3xl font-extrabold text-white">Gestion du Menu du Restaurant</h1>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow container py-8">
+        <div class="card">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Ajouter un Nouveau Plat au Menu</h2>
+            <form id="addMenuItemForm" action="php/add_menu_item.php" method="POST" enctype="multipart/form-data" class="space-y-4">
+                <div>
+                    <label for="mealName" class="block text-gray-700 text-sm font-bold mb-2">Nom du Plat:</label>
+                    <input type="text" id="mealName" name="mealName" required>
+                </div>
+                <!-- Removed Category Selection -->
+                <div>
+                    <label for="mealDescription" class="block text-gray-700 text-sm font-bold mb-2">Description:</label>
+                    <textarea id="mealDescription" name="mealDescription" rows="4" required></textarea>
+                </div>
+                <div>
+                    <label for="mealPrice" class="block text-gray-700 text-sm font-bold mb-2">Prix (€):</label>
+                    <input type="number" id="mealPrice" name="mealPrice" step="0.01" min="0" required>
+                </div>
+                <div>
+                    <label for="mealImage" class="block text-gray-700 text-sm font-bold mb-2">Image du Plat:</label>
+                    <input type="file" id="mealImage" name="mealImage" accept="image/*">
+                </div>
+                <button type="submit" class="btn-primary w-full py-3 text-xl">Ajouter le Plat au Menu</button>
+            </form>
+        </div>
+    </main>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmationModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" id="closeConfirmationModal">&times;</span>
+            <h3 id="confirmationTitle" class="text-3xl font-bold text-green-600 mb-4"></h3>
+            <p id="confirmationMessage" class="text-gray-700 text-lg mb-6"></p>
+            <button class="btn-primary py-2 px-6" onclick="hideModal('confirmationModal')">Fermer</button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-primary-blue text-white p-8 mt-auto">
+        <div class="container mx-auto text-center">
+            <p class="text-lg">&copy; 2024 Hôtel geogia. Tous droits réservés.</p>
+            <p class="text-sm mt-2">Gestion du menu.</p>
+        </div>
+    </footer>
+
+    <script>
+        const addMenuItemForm = document.getElementById('addMenuItemForm');
+        const confirmationModal = document.getElementById('confirmationModal');
+        const confirmationTitle = document.getElementById('confirmationTitle');
+        const confirmationMessage = document.getElementById('confirmationMessage');
+        const closeConfirmationModal = document.getElementById('closeConfirmationModal');
+
+        // Function to show the confirmation modal
+        function showConfirmationModal(title, message) {
+            confirmationTitle.textContent = title;
+            confirmationMessage.textContent = message;
+            confirmationModal.style.display = 'flex';
+        }
+
+        // Function to hide a modal by its ID
+        function hideModal(id) {
+            document.getElementById(id).style.display = 'none';
+        }
+
+        // Event listener for form submission
+        addMenuItemForm.addEventListener('submit', (event) => {
+            event.preventDefault(); // Prevent default form submission
+
+            // Get form data
+            const mealName = document.getElementById('mealName').value;
+            // Removed mealCategory as it's no longer in the form
+            const mealDescription = document.getElementById('mealDescription').value;
+            const mealPrice = parseFloat(document.getElementById('mealPrice').value).toFixed(2);
+            const mealImageInput = document.getElementById('mealImage'); // Get the file input element
+            const mealImageFile = mealImageInput.files[0]; // Get the selected file
+
+            let imageInfo = "Aucune image sélectionnée";
+            if (mealImageFile) {
+                imageInfo = `Fichier: ${mealImageFile.name} (Taille: ${mealImageFile.size} octets, Type: ${mealImageFile.type})`;
+                // In a real application, you would typically upload this file to a server
+                // using FormData and fetch/XMLHttpRequest.
+                // Example:
+                // const formData = new FormData();
+                // formData.append('mealImage', mealImageFile);
+                // fetch('/upload-image', { method: 'POST', body: formData });
+            }
+
+
+            // Log the new meal data to console (simulating backend submission)
+            console.log('Nouveau plat ajouté:', {
+                name: mealName,
+                // Removed category from log
+                description: mealDescription,
+                price: mealPrice,
+                image: imageInfo // Now logs file info instead of URL
+            });
+
+            // Show confirmation message
+            showConfirmationModal(
+                'Plat Ajouté !',
+                `Le plat "${mealName}" a été ajouté au menu avec succès. ${imageInfo}`
+            );
+
+            // Reset the form
+            addMenuItemForm.reset();
+        });
+
+        // Event listener to close the confirmation modal
+        closeConfirmationModal.addEventListener('click', () => {
+            hideModal('confirmationModal');
+        });
+
+        // Close modal when clicking outside of it
+        window.addEventListener('click', (event) => {
+            if (event.target === confirmationModal) {
+                hideModal('confirmationModal');
+            }
+        });
+    </script>
+</body>
+</html>

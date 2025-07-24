@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu du Jour - Commande en Ligne</title>
+    <!-- Chargement de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Personnalisation de la police Inter */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7fafc; /* Gris très clair */
+        }
+        /* Styles pour les champs de formulaire en cas d'erreur */
+        .input-error {
+            border-color: #ef4444; /* Rouge */
+        }
+        .error-message {
+            color: #ef4444; /* Rouge */
+            font-size: 0.875rem; /* Taille de texte petite */
+            margin-top: 0.25rem;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+    <!-- En-tête -->
+    <header class="bg-gradient-to-r from-blue-500 to-indigo-600 text-white p-6 shadow-lg rounded-b-xl">
+        <div class="container mx-auto text-center">
+            <h1 class="text-4xl font-extrabold mb-2">Le Menu du Jour</h1>
+            <p class="text-xl font-light">Vos plats préférés livrés directement chez vous !</p>
+        </div>
+    </header>
+
+    <!-- Contenu principal -->
+    <main class="container mx-auto p-6 flex-grow">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Section Plats du Jour -->
+            <section class="lg:col-span-2 bg-white p-6 rounded-xl shadow-md">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6">Nos Spécialités du Jour</h2>
+                <div id="dishes-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Les plats seront insérés ici par JavaScript -->
+                </div>
+            </section>
+
+            <!-- Section Votre Commande et Livraison -->
+            <aside class="lg:col-span-1 bg-white p-6 rounded-xl shadow-md sticky top-6 self-start">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6">Votre Commande</h2>
+
+                <!-- Liste des articles commandés -->
+                <div id="order-summary" class="mb-6">
+                    <ul id="order-list" class="space-y-3">
+                        <!-- Les articles commandés seront insérés ici par JavaScript -->
+                        <li class="text-gray-500 italic">Votre panier est vide.</li>
+                    </ul>
+                    <div class="border-t border-gray-200 mt-4 pt-4 flex justify-between items-center">
+                        <span class="text-xl font-semibold text-gray-800">Total:</span>
+                        <span id="total-price" class="text-2xl font-bold text-blue-600">0.00 Fcfa</span>
+                    </div>
+                </div>
+
+                <!-- Formulaire de Livraison -->
+                <h3 class="text-2xl font-bold text-gray-800 mb-4">Informations de Livraison</h3>
+                <form id="delivery-form" class="space-y-4">
+                    <div>
+                        <label for="customer-name" class="block text-gray-700 text-sm font-medium mb-1">Nom Complet</label>
+                        <input type="text" id="customer-name" name="customer-name" required
+                               class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200">
+                        <p id="name-error" class="error-message hidden">Veuillez entrer votre nom complet.</p>
+                    </div>
+                    <div>
+                        <label for="customer-phone" class="block text-gray-700 text-sm font-medium mb-1">Numéro de Téléphone</label>
+                        <input type="tel" id="customer-phone" name="customer-phone" required
+                               class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200">
+                        <p id="phone-error" class="error-message hidden">Veuillez entrer un numéro de téléphone valide.</p>
+                    </div>
+                    <div>
+                        <label for="delivery-address" class="block text-gray-700 text-sm font-medium mb-1">Adresse de Livraison</label>
+                        <textarea id="delivery-address" name="delivery-address" rows="3" required
+                                  class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"></textarea>
+                        <p id="address-error" class="error-message hidden">Veuillez entrer votre adresse de livraison.</p>
+                    </div>
+
+                    <!-- Bouton de commande -->
+                    <button type="submit" id="place-order-btn"
+                            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                        Commander Maintenant
+                    </button>
+                </form>
+
+                <!-- Message de confirmation/erreur -->
+                <div id="order-message" class="mt-6 p-4 rounded-lg text-center hidden"></div>
+            </aside>
+        </div>
+    </main>
+
+    <!-- Pied de page -->
+    <footer class="bg-primary-blue text-white p-4 text-center mt-8 rounded-t-xl">
+        <div class="container mx-auto text-center">
+            <div class="flex justify-center space-x-6 mb-4">
+                <a href="#" class="text-white hover:text-light-blue transition duration-300">
+                    <i class="fab fa-facebook-f text-3xl"></i>
+                </a>
+                <a href="#" class="text-white hover:text-light-blue transition duration-300">
+                    <i class="fab fa-twitter text-3xl"></i>
+                </a>
+                <a href="#" class="text-white hover:text-light-blue transition duration-300">
+                    <i class="fab fa-instagram text-3xl"></i>
+                </a>
+                <a href="#" class="text-white hover:text-light-blue transition duration-300">
+                    <i class="fab fa-linkedin-in text-3xl"></i>
+                </a>
+            </div>
+            <p class="text-lg">&copy; 2025 Hôtel Geogia. Tous droits réservés.</p>
+            <p class="text-sm mt-2">Conçu pour votre confort et votre plaisir.</p>
+        </div>
+    </footer>
+
+    <script>
+
+       
+        
+        // Données des plats du jour
+        const dishes = [
+            {
+                id: 'plat1',
+                name: 'Macedoine',
+                description: 'Salade à base de petit poire, mais doux, pomme de terre, carotte avec une sauce vinaigrait.',
+                price: 2500,
+                image: 'macedoine.jpg'
+            },
+            {
+                id: 'plat2',
+                name: 'Salade de fruit',
+                description: 'Salade composé de : ananas, kiwi,orange, papaye, pastéque.',
+                price: 3000,
+                image: 'fruit.jpg'
+            },
+            {
+                id: 'plat3',
+                name: 'Thiéboudienne Poisson',
+                description: 'Le Ndolé est un plat traditionnel camerounais, de la region du littoral à base de feuilles de ndolé, arachides, de viande (bœuf, poisson fumé, crevettes) et épices, et est souvent servi avec du riz, du plantain, du manioc ou du miondo.',
+                price: 4500,
+                image: 'Untitled10.jpg'
+            },
+            {
+                id: 'plat4',
+                name: 'Taro pilé',
+                description: 'Le taro pilé et la sauce jaune : un met traditionnel super délicieux du grand ouest – Cameroun.',
+                price: 5000,
+                image: 'Untitled9.jpg'
+            },
+            {
+                id: 'plat5',
+                name: 'Le mets de pistache',
+                description: 'Le mets de pistache:plat traditionnel camerounais à base de pistache .',
+                price: 5000,
+                image: 'Untitled8.jpg'
+            },
+            {
+                id: 'plat6',
+                name: 'Mbongo',
+                description: 'Plats traditionnel: Mbongo.',
+                price: 3000,
+                image: 'Mbongo.jpg'
+            }
+        ];
+
+        // Panier de commande
+        let cart = {}; // { dishId: { item: dishObject, quantity: count } }
+
+        // Références aux éléments du DOM
+        const dishesContainer = document.getElementById('dishes-container');
+        const orderList = document.getElementById('order-list');
+        const totalPriceElement = document.getElementById('total-price');
+        const deliveryForm = document.getElementById('delivery-form');
+        const orderMessage = document.getElementById('order-message');
+
+        // Fonction pour afficher les plats disponibles
+        function displayDishes(){
+    fetch('php/get_menu.php')
+    .then(res => res.json())
+    .then(dishes => {
+        dishesContainer.innerHTML = '';
+        dishes.forEach(dish => {
+           const dishCard = `
+    <div class="bg-gray-50 p-4 rounded-lg shadow-sm flex flex-col justify-between">
+        <img src="uploads/${dish.image}" alt="${dish.Name_M}" class="w-full h-48 object-cover rounded-md mb-4">
+        <h3 class="text-xl font-semibold text-gray-800 mb-2">${dish.Name_M}</h3>
+        <p class="text-gray-600 text-sm mb-3 flex-grow">${dish.Description}</p>
+        <div class="flex justify-between items-center mt-auto">
+            <span class="text-lg font-bold text-green-600">${parseFloat(dish.Price).toFixed(2)} Fcfa</span>
+            <button data-dish-id="${dish.Menu_id}"
+                class="add-to-cart-btn bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-full transition duration-300 ease-in-out transform hover:scale-105">
+                Ajouter au panier
+            </button>
+        </div>
+    </div>
+            `;
+            dishesContainer.innerHTML += dishCard;
+        });
+    });
+                  
+ }
+
+            // Ajouter les écouteurs d'événements aux boutons "Ajouter au panier"
+            addMenuItemForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+
+    const formData = new FormData(addMenuItemForm);
+
+    fetch('php/add_menu_item.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+    if (data.success) {
+        showConfirmationModal(
+            'Plat Ajouté !',
+            `Le plat a été ajouté au menu avec succès.`
+        );
+        addMenuItemForm.reset();
+        displayDishes(); //   pour rafraîchir la liste
+    } else {
+        showConfirmationModal(
+            'Erreur',
+            data.error || 'Erreur lors de l\'ajout du plat.'
+        );
+    }
+    
+   });
+});
+
+        // Fonction pour ajouter un plat au panier
+        function addToCart(dishId) {
+            const selectedDish = dishes.find(d => d.id === dishId);
+            if (selectedDish) {
+                if (cart[dishId]) {
+                    cart[dishId].quantity++;
+                } else {
+                    cart[dishId] = { item: selectedDish, quantity: 1 };
+                }
+                updateOrderSummary();
+            }
+        }
+
+        // Fonction pour mettre à jour le résumé de la commande
+        function updateOrderSummary() {
+            orderList.innerHTML = ''; // Nettoyer la liste
+            let total = 0;
+
+            const cartItems = Object.values(cart);
+            if (cartItems.length === 0) {
+                orderList.innerHTML = '<li class="text-gray-500 italic">Votre panier est vide.</li>';
+            } else {
+                cartItems.forEach(cartItem => {
+                    const itemTotal = cartItem.item.price * cartItem.quantity;
+                    total += itemTotal;
+                    const listItem = `
+                        <li class="flex justify-between items-center bg-gray-50 p-2 rounded-md">
+                            <span>${cartItem.item.name} x ${cartItem.quantity}</span>
+                            <div class="flex items-center space-x-2">
+                                <span class="font-semibold">${itemTotal.toFixed(2)} Fcfa</span>
+                                <button data-dish-id="${cartItem.item.id}"
+                                    class="remove-from-cart-btn text-red-500 hover:text-red-700 text-lg font-bold px-2 py-1 rounded-full">
+                                    &times;
+                                </button>
+                            </div>
+                        </li>
+                    `;
+                    orderList.innerHTML += listItem;
+                });
+            }
+
+            totalPriceElement.textContent = `${total.toFixed(2)} Fcfa`;
+
+            // Ajouter les écouteurs d'événements aux boutons "Supprimer"
+            document.querySelectorAll('.remove-from-cart-btn').forEach(button => {
+                button.addEventListener('click', (event) => {
+                    const dishId = event.target.dataset.dishId;
+                    removeFromCart(dishId);
+                });
+            });
+        }
+
+        // Fonction pour retirer un plat du panier
+        function removeFromCart(dishId) {
+            if (cart[dishId]) {
+                cart[dishId].quantity--;
+                if (cart[dishId].quantity <= 0) {
+                    delete cart[dishId];
+                }
+                updateOrderSummary();
+            }
+        }
+
+        // Fonction de validation du formulaire
+        function validateForm() {
+            let isValid = true;
+
+            // Réinitialiser les messages d'erreur
+            document.querySelectorAll('.error-message').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('input, textarea').forEach(el => el.classList.remove('input-error'));
+
+            const nameInput = document.getElementById('customer-name');
+            const phoneInput = document.getElementById('customer-phone');
+            const addressInput = document.getElementById('delivery-address');
+
+            if (nameInput.value.trim() === '') {
+                document.getElementById('name-error').classList.remove('hidden');
+                nameInput.classList.add('input-error');
+                isValid = false;
+            }
+
+            // Validation simple du numéro de téléphone (au moins 7 chiffres)
+            if (!/^\d{7,}$/.test(phoneInput.value.trim())) {
+                document.getElementById('phone-error').classList.remove('hidden');
+                phoneInput.classList.add('input-error');
+                isValid = false;
+            }
+
+            if (addressInput.value.trim() === '') {
+                document.getElementById('address-error').classList.remove('hidden');
+                addressInput.classList.add('input-error');
+                isValid = false;
+            }
+
+            if (Object.keys(cart).length === 0) {
+                orderMessage.textContent = 'Votre panier est vide. Veuillez ajouter des plats avant de commander.';
+                orderMessage.className = 'mt-6 p-4 rounded-lg text-center bg-red-100 text-red-700';
+                orderMessage.classList.remove('hidden');
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        // Gestion de la soumission du formulaire
+        deliveryForm.addEventListener('submit', function(event) {
+            event.preventDefault(); // Empêcher le rechargement de la page
+
+            if (validateForm()) {
+                const customerName = document.getElementById('customer-name').value;
+                const customerPhone = document.getElementById('customer-phone').value;
+                const deliveryAddress = document.getElementById('delivery-address').value;
+                const totalOrderPrice = parseFloat(totalPriceElement.textContent);
+
+                // Construction de l'objet commande
+                const orderDetails = {
+                    customer: {
+                        name: customerName,
+                        phone: customerPhone,
+                        address: deliveryAddress
+                    },
+                    items: Object.values(cart).map(item => ({
+                        name: item.item.name,
+                        quantity: item.quantity,
+                        pricePerUnit: item.item.price
+                    })),
+                    total: totalOrderPrice,
+                    orderDate: new Date().toLocaleString('fr-FR')
+                };
+
+                // Simuler l'envoi de la commande (dans un vrai projet, ce serait une requête API)
+                console.log('Commande passée:', orderDetails);
+
+                // Afficher un message de succès
+                orderMessage.textContent = `Merci ${customerName} ! Votre commande de ${totalOrderPrice.toFixed(2)} Fcfa a été passée avec succès et sera livrée à ${deliveryAddress}.`;
+                orderMessage.className = 'mt-6 p-4 rounded-lg text-center bg-green-100 text-green-700';
+                orderMessage.classList.remove('hidden');
+
+                // Réinitialiser le panier et le formulaire après la commande
+                cart = {};
+                updateOrderSummary();
+                deliveryForm.reset();
+            } else {
+                // Le message d'erreur est déjà affiché par validateForm()
+            }
+        });
+
+        // Initialisation : afficher les plats au chargement de la page
+        document.addEventListener('DOMContentLoaded', () => {
+            displayDishes();
+            updateOrderSummary(); // S'assurer que le résumé est vide au début
+        });
+    </script>
+</body>
+</html>

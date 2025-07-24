@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Réservez Notre Salle de Fête</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <!-- Google Font: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Custom Tailwind configuration for colors */
+        @tailwind base;
+        @tailwind components;
+        @tailwind utilities;
+
+        :root {
+            --color-primary-blue: #3b82f6; /* Equivalent to blue-500 in Tailwind */
+            --color-accent-orange: #f97316; /* Equivalent to orange-500 in Tailwind */
+            --color-accent-orange-dark: #ea580c; /* Equivalent to orange-600 in Tailwind */
+            --color-text-dark: #1f2937; /* Dark gray for headings */
+            --color-text-medium: #4b5563; /* Medium gray for paragraphs */
+            --color-background-light-blue: #e0f2fe; /* Light blue background */
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-background-light-blue); /* Light blue background */
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Align to the top */
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        /* General container styling matching the previous design */
+        .main-container {
+            background-color: #ffffff;
+            border-radius: 12px; /* Rounded corners for the container */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* Stronger shadow */
+            padding: 2rem;
+            width: 100%;
+            max-width: 1000px; /* Increased max-width for better form layout */
+        }
+
+        /* Header styling */
+        .header-section h1 {
+            font-size: 2.5rem; /* Larger for prominence */
+            font-weight: 700; /* font-bold */
+            color: var(--color-text-dark); /* Darker text for heading */
+            margin-bottom: 0.75rem;
+        }
+        .header-section p {
+            color: var(--color-text-medium); /* Slightly darker grey for description */
+            font-size: 1.125rem; /* text-lg */
+            line-height: 1.6;
+        }
+
+        /* Section card styling for the form */
+        .section-card {
+            background-color: #ffffff; /* Ensure card background is white */
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Lighter shadow for inner cards */
+            padding: 2rem;
+            border: 1px solid #e5e7eb; /* Light border */
+        }
+
+        /* Input and select styling */
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="date"],
+        input[type="number"],
+        select,
+        textarea {
+            border: 1px solid #d1d5db; /* Lighter border */
+            border-radius: 8px; /* Slightly more rounded inputs */
+            padding: 0.75rem 1rem; /* Adjust padding */
+            transition: all 0.2s ease-in-out;
+        }
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--color-primary-blue);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3); /* Focus ring effect */
+        }
+
+        /* Button styling */
+        .btn-primary {
+            background-color: var(--color-accent-orange);
+            color: white;
+            padding: 1rem 2.5rem; /* Larger padding for button */
+            border-radius: 10px; /* Slightly more rounded button */
+            font-weight: 600;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+        }
+        .btn-primary:hover {
+            background-color: var(--color-accent-orange-dark);
+            transform: translateY(-2px); /* Slight lift effect on hover */
+        }
+        .btn-primary:focus {
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.4); /* Focus ring for orange button */
+        }
+
+        /* Custom Tailwind classes for colors */
+        .text-primary-blue { color: var(--color-primary-blue); }
+        .bg-accent-orange { background-color: var(--color-accent-orange); }
+        .hover\:bg-accent-orange-dark:hover { background-color: var(--color-accent-orange-dark); }
+        .text-accent-orange { color: var(--color-accent-orange); }
+        .focus\:ring-primary-blue:focus { --tw-ring-color: var(--color-primary-blue); }
+        .focus\:ring-accent-orange:focus { --tw-ring-color: var(--color-accent-orange); }
+
+        /* Styles for the success message */
+        .success-message {
+            background-color: #d1fae5; /* Light green background */
+            color: #065f46; /* Dark green text */
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-weight: 500;
+            display: none; /* Hidden by default */
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+        .success-message.show {
+            display: block;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="header-section mb-10 text-center">
+            <h1>Réservez Notre Salle de Fête</h1>
+            <p class="max-w-3xl mx-auto">
+                Notre salle de fête élégante et polyvalente est l'endroit idéal pour vos mariages, conférences, anniversaires et autres événements spéciaux. 
+                Remplissez le formulaire ci-dessous pour demander un devis personnalisé et nous vous contacterons dans les plus brefs délais.
+            </p>
+        </div>
+
+        <!-- Image de la Salle de Fête -->
+        <div class="mb-10 rounded-xl overflow-hidden shadow-lg">
+            <img src="https://placehold.co/1200x600/6c91df/FFFFFF?text=Salle+de+Fête+Hôtel+Geogia" alt="Image de la Salle de Fête de l'Hôtel Geogia" class="w-full h-96 object-cover">
+        </div>
+
+        <!-- Formulaire de Demande de Devis pour la Salle de Fête -->
+        <section class="section-card max-w-4xl mx-auto p-8">
+            <h2 class="text-3xl font-bold text-primary-blue mb-6 text-center">Demande de Devis</h2>
+            
+            <!-- Success Message Container -->
+            <div id="successMessage" class="success-message">
+                <i class="fas fa-check-circle mr-2"></i> Votre demande de devis a été envoyée avec succès ! Nous vous contacterons bientôt.
+            </div>
+
+            <form id="eventBookingForm" class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="full-name" class="block text-gray-700 text-sm font-semibold mb-2">Nom complet</label>
+                        <input type="text" id="full-name" name="full_name" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-blue" placeholder="Votre nom complet" required>
+                    </div>
+                    <div>
+                        <label for="email" class="block text-gray-700 text-sm font-semibold mb-2">Adresse Email</label>
+                        <input type="email" id="email" name="email" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-blue" placeholder="votre email" required>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="phone" class="block text-gray-700 text-sm font-semibold mb-2">Numéro de téléphone</label>
+                        <input type="tel" id="phone" name="phone" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-blue" placeholder="+237 6XX XX XX XX" required>
+                    </div>
+                    <div>
+                        <label for="event-type" class="block text-gray-700 text-sm font-semibold mb-2">Type d'événement</label>
+                        <select id="event-type" name="event_type" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-blue" required>
+                            <option value="">Sélectionnez un type</option>
+                            <option value="mariage">Mariage</option>
+                            <option value="conference">Conférence</option>
+                            <option value="anniversaire">Anniversaire</option>
+                            <option value="gala">Gala</option>
+                            <option value="autre">Autre</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="event-date" class="block text-gray-700 text-sm font-semibold mb-2">Date de l'événement</label>
+                        <input type="date" id="event-date" name="event_date" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-blue" required>
+                    </div>
+                    <div>
+                        <label for="guests" class="block text-gray-700 text-sm font-semibold mb-2">Nombre estimé d'invités</label>
+                        <input type="number" id="guests" name="guests" min="10" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-blue" placeholder="Ex: 100" required>
+                    </div>
+                </div>
+                <div>
+                    <label for="message" class="block text-gray-700 text-sm font-semibold mb-2">Besoins spécifiques / Message</label>
+                    <textarea id="message" name="message" rows="5" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-blue" placeholder="Décrivez vos besoins (équipement, traiteur, etc.)"></textarea>
+                </div>
+                <div class="text-center">
+                    <button type="submit" class="btn-primary">
+                        Envoyer la Demande de Devis
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Informations complémentaires sur la salle de fête -->
+        <section class="mt-12 text-center max-w-3xl mx-auto">
+            <h2 class="text-3xl font-bold text-primary-blue mb-6">Pourquoi choisir notre salle ?</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                    <i class="fas fa-expand-arrows-alt text-5xl text-accent-orange mb-4"></i>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Espace Modulable</h3>
+                    <p class="text-gray-700">Adaptez la configuration de la salle à la taille et au style de votre événement.</p>
+                </div>
+                <div>
+                    <i class="fas fa-cogs text-5xl text-accent-orange mb-4"></i>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Équipement de Pointe</h3>
+                    <p class="text-gray-700">Profitez de notre système son, éclairage et projection de dernière génération.</p>
+                </div>
+                <div>
+                    <i class="fas fa-concierge-bell text-5xl text-accent-orange mb-4"></i>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Service Traiteur Exclusif</h3>
+                    <p class="text-gray-700">Un menu personnalisé par nos chefs pour ravir vos invités.</p>
+                </div>
+                <div>
+                    <i class="fas fa-map-marker-alt text-5xl text-accent-orange mb-4"></i>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Emplacement Idéal</h3>
+                    <p class="text-gray-700">Facilement accessible, avec un grand parking pour vos convives.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('eventBookingForm');
+            const successMessage = document.getElementById('successMessage');
+
+            form.addEventListener('submit', function(event) {
+                event.preventDefault(); // Empêche la soumission par défaut du formulaire
+
+                // Ici, vous enverriez normalement les données du formulaire à votre serveur
+                // Par exemple, avec fetch API:
+                /*
+                const formData = new FormData(form);
+                fetch('/api/submit-event-booking', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Afficher le message de succès
+                        successMessage.classList.add('show');
+                        // Effacer les champs du formulaire
+                        form.reset();
+                        // Cacher le message après quelques secondes
+                        setTimeout(() => {
+                            successMessage.classList.remove('show');
+                        }, 5000); // Le message disparaît après 5 secondes
+                    } else {
+                        // Gérer les erreurs de soumission
+                        console.error('Erreur lors de l\'envoi de la demande:', data.message);
+                        // Afficher un message d'erreur à l'utilisateur si nécessaire
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur réseau ou du serveur:', error);
+                    // Afficher un message d'erreur à l'utilisateur
+                });
+                */
+
+                // Pour cette démonstration, nous allons simplement simuler le succès
+                // Afficher le message de succès
+                successMessage.classList.add('show');
+                // Effacer les champs du formulaire
+                form.reset();
+                // Cacher le message après quelques secondes
+                setTimeout(() => {
+                    successMessage.classList.remove('show');
+                }, 5000); // Le message disparaît après 5 secondes
+            });
+        });
+    </script>
+</body>
+</html>

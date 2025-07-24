@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Réservation et Paiement de Chambre d'Hôtel</title>
+    <!-- Chargement de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Configuration de la police Inter */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Styles personnalisés pour les effets visuels des boutons */
+        .btn-primary {
+            background-image: linear-gradient(to right, #2563EB 0%, #3B82F6 51%, #2563EB 100%);
+            transition: 0.5s;
+            background-size: 200% auto;
+            color: white;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            display: block;
+        }
+        .btn-primary:hover {
+            background-position: right center;
+            color: #fff;
+            text-decoration: none;
+        }
+        .btn-primary:active {
+            transform: translateY(1px);
+        }
+        .loading-spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #fff;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 flex items-center justify-center min-h-screen p-4">
+    <div class="bg-white rounded-lg shadow-xl p-8 max-w-4xl w-full">
+        <!-- En-tête de l'hôtel -->
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-extrabold text-gray-900 mb-2">Hôtel Geogia</h1>
+            <p class="text-lg text-gray-600">Réservez votre séjour parfait chez nous !</p>
+        </header>
+
+        <!-- Formulaire de réservation (Étape 1) -->
+        <section id="reservationSection" class="mb-10">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b-2 border-blue-500 pb-2">Faire une Réservation</h2>
+            <form id="reservationForm" action="php/reservation_process.php" method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Date d'arrivée -->
+                <div>
+                    <label for="checkInDate" class="block text-sm font-medium text-gray-700 mb-2">Date d'arrivée</label>
+                    <input type="date" id="checkInDate" name="checkInDate" required
+                           class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                </div>
+
+                <!-- Date de départ -->
+                <div>
+                    <label for="checkOutDate" class="block text-sm font-medium text-gray-700 mb-2">Date de départ</label>
+                    <input type="date" id="checkOutDate" name="checkOutDate" required
+                           class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                </div>
+
+                <!-- Nombre d'adultes -->
+                <div>
+                    <label for="numAdults" class="block text-sm font-medium text-gray-700 mb-2">Nombre d'adultes</label>
+                    <select id="numAdults" name="numAdults" required
+                            class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                        <option value="1">1 Adulte</option>
+                        <option value="2">2 Adultes</option>
+                        <option value="3">3 Adultes</option>
+                        <option value="4">4 Adultes</option>
+                    </select>
+                </div>
+
+                <!-- Nombre d'enfants -->
+                <div>
+                    <label for="numChildren" class="block text-sm font-medium text-gray-700 mb-2">Nombre d'enfants</label>
+                    <select id="numChildren" name="numChildren"
+                            class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                        <option value="0">0 Enfant</option>
+                        <option value="1">1 Enfant</option>
+                        <option value="2">2 Enfants</option>
+                        <option value="3">3 Enfants</option>
+                    </select>
+                </div>
+
+                <!-- Type de chambre -->
+                <div class="col-span-1 md:col-span-2">
+                    <label for="roomType" class="block text-sm font-medium text-gray-700 mb-2">Type de chambre</label>
+                    <select id="roomType" name="roomType" required
+                            class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                        <option value="standard" data-price="80">Chambre Standard (10000 Fcfa/nuit)</option>
+                        <option value="deluxe" data-price="120">Chambre  (72057Fcfa/nuit)</option>
+                        <option value="suite" data-price="200">Suite (100000Fcfa/nuit)</option>
+                    </select>
+                </div>
+
+                <!-- Bouton de soumission Étape 1 -->
+                <div class="col-span-1 md:col-span-2 text-center mt-6">
+                    <button type="submit"
+                            class="btn-primary w-full md:w-auto px-8 py-3 text-lg font-semibold rounded-lg shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        Passer au Paiement
+                    </button>
+                </div>
+            </form>
+            <!-- Message de confirmation/erreur pour étape 1 -->
+            <div id="messageBox" class="mt-8 p-4 rounded-md hidden" role="alert">
+                <p id="messageText" class="font-medium"></p>
+            </div>
+        </section>
+
+        <!-- Section de Paiement (Étape 2) - Initialement cachée -->
+        <section id="paymentSection" class="hidden mb-10">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b-2 border-blue-500 pb-2">Confirmer et Payer</h2>
+
+            <!-- Récapitulatif de la Réservation -->
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8 shadow-sm">
+                <h3 class="text-xl font-semibold text-blue-800 mb-4">Votre Réservation</h3>
+                <div id="reservationSummary" class="text-gray-700 space-y-2">
+                    <!-- Les détails seront injectés ici par JS -->
+                </div>
+                <div class="mt-4 pt-4 border-t border-blue-200 flex justify-between items-center text-lg font-bold text-blue-900">
+                    <span>Total à Payer:</span>
+                    <span id="totalPrice">0.00€</span>
+                </div>
+            </div>
+
+            <!-- Informations Client -->
+           <div id="orderFormSection" class="menu-card hidden">
+    <h3 class="text-3xl font-bold text-gray-800 mb-6 text-center">Informations de Livraison</h3>
+    <form id="orderForm" class="space-y-4">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">Vos Informations</h3>
+                <form id="customerInfoForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="firstName" class="block text-sm font-medium text-gray-700 mb-2">Prénom</label>
+                        <input type="text" id="firstName" name="firstName" required
+                               class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    </div>
+                    <div>
+                        <label for="lastName" class="block text-sm font-medium text-gray-700 mb-2">Nom</label>
+                        <input type="text" id="lastName" name="lastName" required
+                               class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    </div>
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                        <input type="email" id="email" name="email" required
+                               class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    </div>
+                    <div>
+                        <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">Téléphone</label>
+                        <input type="tel" id="phone" name="phone" required
+                               class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    </div>
+                </form>
+            </div>
+
+            <!-- Options Supplémentaires 
+            <div class="mb-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">Options Supplémentaires</h3>
+                <div class="space-y-3">
+                    <label class="flex items-center text-gray-700">
+                        <input type="checkbox" id="breakfast" name="extraOptions" value="breakfast" data-extra-price="15" class="form-checkbox h-5 w-5 text-blue-600 rounded">
+                        <span class="ml-2">Petit-déjeuner (15€ / personne / nuit)</span>
+                    </label>
+                    <label class="flex items-center text-gray-700">
+                        <input type="checkbox" id="extraBed" name="extraOptions" value="extraBed" data-extra-price="30" class="form-checkbox h-5 w-5 text-blue-600 rounded">
+                        <span class="ml-2">Lit supplémentaire (30€ / nuit)</span>
+                    </label>
+                    <label class="flex items-center text-gray-700">
+                        <input type="checkbox" id="shuttle" name="extraOptions" value="shuttle" data-extra-price="25" class="form-checkbox h-5 w-5 text-blue-600 rounded">
+                        <span class="ml-2">Service de navette aéroport (25€)</span>
+                    </label>
+                </div>
+            </div> -->
+
+            <!-- Méthodes de Paiement -->
+            <div class="mb-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">Méthode de Paiement</h3>
+                <div class="space-y-4">
+                    <!--<label class="flex items-center p-4 border border-gray-300 rounded-lg cursor-pointer hover:bg-blue-50 transition duration-200">
+                        <input type="radio" name="paymentMethod" value="creditCard" class="form-radio h-5 w-5 text-blue-600" checked>
+                        <span class="ml-3 text-lg font-medium text-gray-700">Carte de Crédit</span>
+                        <img src="https://placehold.co/60x30/FFFFFF/000?text=VISA" alt="Visa" class="ml-auto h-8">
+                        <img src="https://placehold.co/60x30/FFFFFF/000?text=MC" alt="MasterCard" class="ml-2 h-8">
+                    </label>
+                    <label class="flex items-center p-4 border border-gray-300 rounded-lg cursor-pointer hover:bg-blue-50 transition duration-200">
+                        <input type="radio" name="paymentMethod" value="paypal" class="form-radio h-5 w-5 text-blue-600">
+                        <span class="ml-3 text-lg font-medium text-gray-700">PayPal</span>
+                        <img src="https://placehold.co/80x30/FFFFFF/000?text=PayPal" alt="PayPal" class="ml-auto h-8">
+                    </label>-->
+                    <label class="flex items-center p-4 border border-gray-300 rounded-lg cursor-pointer hover:bg-blue-50 transition duration-200">
+                        <input type="radio" name="paymentMethod" value="orangeMoney" class="form-radio h-5 w-5 text-blue-600">
+                        <span class="ml-3 text-lg font-medium text-gray-700">Orange Money</span>
+                        <img src="https://placehold.co/80x30/FF6600/FFF?text=Orange+Money" alt="Orange Money" class="ml-auto h-8">
+                    </label>
+                    <label class="flex items-center p-4 border border-gray-300 rounded-lg cursor-pointer hover:bg-blue-50 transition duration-200">
+                        <input type="radio" name="paymentMethod" value="mtnMobileMoney" class="form-radio h-5 w-5 text-blue-600">
+                        <span class="ml-3 text-lg font-medium text-gray-700">MTN Mobile Money</span>
+                        <img src="https://placehold.co/80x30/FFCC00/000?text=MTN+MM" alt="MTN Mobile Money" class="ml-auto h-8">
+                    </label>
+                    <label class="flex items-center p-4 border border-gray-300 rounded-lg cursor-pointer hover:bg-blue-50 transition duration-200">
+                        <input type="radio" name="paymentMethod" value="ecobank" class="form-radio h-5 w-5 text-blue-600">
+                        <span class="ml-3 text-lg font-medium text-gray-700">Ecobank Pay</span>
+                        <img src="https://placehold.co/80x30/003366/FFF?text=Ecobank" alt="Ecobank Pay" class="ml-auto h-8">
+                    </label>
+                </div>
+            </div>
+
+            <!-- Politiques de Réservation -->
+            <div class="mb-8 p-6 bg-gray-50 rounded-lg border border-gray-200 shadow-sm">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">Politiques de Réservation</h3>
+                <p class="text-gray-700 text-sm mb-2">
+                    <span class="font-bold">Politique d'annulation :</span> Annulation gratuite jusqu'à 24 heures avant la date d'arrivée. Les annulations effectuées moins de 24 heures à l'avance ou les non-présentations entraîneront des frais équivalents à une nuit.
+                </p>
+                <p class="text-gray-700 text-sm">
+                    <span class="font-bold">Politique de remboursement :</span> Les remboursements seront traités dans les 5 à 7 jours ouvrables suivant l'approbation de l'annulation.
+                </p>
+            </div>
+
+            <!-- Bouton Confirmer et Payer -->
+            <div class="text-center mt-6">
+                <button type="button" id="confirmPaymentBtn"
+                        class="btn-primary w-full md:w-auto px-8 py-3 text-lg font-semibold rounded-lg shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 flex items-center justify-center">
+                    <span id="buttonText">Confirmer et Payer</span>
+                    <div id="loadingSpinner" class="loading-spinner ml-3 hidden"></div>
+                </button>
+            </div>
+            <!-- Message de confirmation/erreur pour étape 2 -->
+            <div id="paymentMessageBox" class="mt-8 p-4 rounded-md hidden" role="alert">
+                <p id="paymentMessageText" class="font-medium"></p>
+            </div>
+        </section>
+
+        <!-- Section des chambres populaires (inchangée) -->
+        <section>
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b-2 border-blue-500 pb-2">Nos Chambres Populaires</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Carte de chambre 1 -->
+                <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden transform transition duration-300 hover:scale-105">
+                    <img src="https://placehold.co/400x250/E0F2F7/000?text=Chambre+Standard" alt="Chambre Standard" class="w-full h-48 object-cover">
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Chambre Standard</h3>
+                        <p class="text-gray-600 text-sm mb-3">Confortable et abordable, parfaite pour les courts séjours.</p>
+                        <ul class="text-gray-700 text-sm list-disc list-inside mb-3">
+                            <li>Lit double</li>
+                            <li>Salle de bain privée</li>
+                            <li>Wi-Fi gratuit</li>
+                        </ul>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xl font-semibold text-blue-600">10000 Fcfa / nuit</span>
+                            <button class="bg-blue-500 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-600 transition duration-200">Voir les détails</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carte de chambre 2 -->
+                <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden transform transition duration-300 hover:scale-105">
+                    <img src="https://placehold.co/400x250/D1C4E9/000?text=Chambre+Deluxe" alt="Chambre Deluxe" class="w-full h-48 object-cover">
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">mini suite</h3>
+                        <p class="text-gray-600 text-sm mb-3">Spacieuse et élégante, avec une vue imprenable.</p>
+                        <ul class="text-gray-700 text-sm list-disc list-inside mb-3">
+                            <li>Lit King-size</li>
+                            <li>Balcon privé</li>
+                            <li>Mini-bar</li>
+                        </ul>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xl font-semibold text-blue-600"> 80000 Fcfa / nuit</span>
+                            <button class="bg-blue-500 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-600 transition duration-200">Voir les détails</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carte de chambre 3 -->
+                <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden transform transition duration-300 hover:scale-105">
+                    <img src="https://placehold.co/400x250/FFECB3/000?text=Suite" alt="Suite" class="w-full h-48 object-cover">
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Suite</h3>
+                        <p class="text-gray-600 text-sm mb-3">Le luxe ultime avec un salon séparé et des équipements haut de gamme.</p>
+                        <ul class="text-gray-700 text-sm list-disc list-inside mb-3">
+                            <li>Lit King-size</li>
+                            <li>Salon séparé</li>
+                            <li>Baignoire jacuzzi</li>
+                        </ul>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xl font-semibold text-blue-600">100000 Fcfa / nuit</span>
+                            <button class="bg-blue-500 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-600 transition duration-200">Voir les détails</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+
+</body>
+</html>
