@@ -2,7 +2,9 @@
 require_once __DIR__ . '/../../vendor/autoload.php';
 
 use App\Services\DatabaseService;
-use App\Database\Migrations\InitialSchema;
+
+// Inclure directement le fichier de migration
+require_once __DIR__ . '/migrations/001_initial_schema.php';
 
 try {
     // Chargement des variables d'environnement
@@ -24,22 +26,22 @@ try {
 
     // Exécution des migrations
     $migrations = [
-        'InitialSchema' => new InitialSchema($db)
+        'InitialSchema' => new App\Database\Migrations\InitialSchema($db)
     ];
 
     foreach ($migrations as $name => $migration) {
         // Vérification si la migration a déjà été exécutée
         $stmt = $db->prepare("SELECT id FROM migrations WHERE migration = ?");
         $stmt->execute([$name]);
-        
+
         if (!$stmt->fetch()) {
             // Exécution de la migration
             $migration->up();
-            
+
             // Enregistrement de la migration
             $stmt = $db->prepare("INSERT INTO migrations (migration, batch) VALUES (?, 1)");
             $stmt->execute([$name]);
-            
+
             echo "Migration $name exécutée avec succès.\n";
         } else {
             echo "Migration $name déjà exécutée.\n";
@@ -50,4 +52,4 @@ try {
 } catch (Exception $e) {
     echo "Erreur lors de l'exécution des migrations : " . $e->getMessage() . "\n";
     exit(1);
-} 
+}

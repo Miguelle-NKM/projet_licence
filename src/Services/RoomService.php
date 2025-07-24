@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Services;
 
 use PDO;
@@ -13,6 +14,17 @@ class RoomService
         $this->db = DatabaseService::getInstance()->getConnection();
     }
 
+    public function getAllRooms(): array
+    {
+        $stmt = $this->db->query("
+            SELECT *
+            FROM rooms
+            ORDER BY number ASC
+        ");
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function getAvailableRooms(string $dateStart = null, string $dateEnd = null): array
     {
         $query = "
@@ -20,9 +32,9 @@ class RoomService
             FROM rooms r
             WHERE r.is_available = 1
         ";
-        
+
         $params = [];
-        
+
         if ($dateStart && $dateEnd) {
             $query .= " AND r.id NOT IN (
                 SELECT DISTINCT rr.room_id
@@ -35,19 +47,22 @@ class RoomService
                     OR (res.date_start <= ? AND res.date_end >= ?)
                 )
             )";
-            
+
             $params = [
-                $dateStart, $dateEnd,
-                $dateStart, $dateEnd,
-                $dateStart, $dateEnd
+                $dateStart,
+                $dateEnd,
+                $dateStart,
+                $dateEnd,
+                $dateStart,
+                $dateEnd
             ];
         }
-        
+
         $query .= " ORDER BY r.price_per_night ASC";
-        
+
         $stmt = $this->db->prepare($query);
         $stmt->execute($params);
-        
+
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
@@ -59,7 +74,7 @@ class RoomService
             WHERE id = ?
         ");
         $stmt->execute([$id]);
-        
+
         return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
     }
 
@@ -72,7 +87,7 @@ class RoomService
             ORDER BY price_per_night ASC
         ");
         $stmt->execute([$type]);
-        
+
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
@@ -163,4 +178,4 @@ class RoomService
         $stmt = $this->db->prepare("DELETE FROM rooms WHERE id = ?");
         $stmt->execute([$id]);
     }
-} 
+}

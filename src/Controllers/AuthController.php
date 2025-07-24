@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Controllers;
 
 use App\Services\AuthService;
@@ -46,8 +47,12 @@ class AuthController
             }
         }
 
-        // Affichage du formulaire de connexion
+        // Affichage du formulaire de connexion avec layout
+        $title = 'Connexion';
+        ob_start();
         require __DIR__ . '/../Views/templates/auth/login.php';
+        $content = ob_get_clean();
+        require __DIR__ . '/../Views/templates/layout.php';
     }
 
     public function register()
@@ -77,8 +82,45 @@ class AuthController
             }
         }
 
-        // Affichage du formulaire d'inscription
+        // Affichage du formulaire d'inscription avec layout
+        $title = 'Inscription';
+        ob_start();
         require __DIR__ . '/../Views/templates/auth/register.php';
+        $content = ob_get_clean();
+        require __DIR__ . '/../Views/templates/layout.php';
+    }
+
+    public function logout()
+    {
+        // Démarrer la session si elle n'est pas déjà démarrée
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        // Détruire toutes les données de session
+        $_SESSION = [];
+
+        // Détruire le cookie de session si il existe
+        if (ini_get("session.use_cookies")) {
+            $params = session_get_cookie_params();
+            setcookie(
+                session_name(),
+                '',
+                time() - 42000,
+                $params["path"],
+                $params["domain"],
+                $params["secure"],
+                $params["httponly"]
+            );
+        }
+
+        // Détruire la session
+        session_destroy();
+
+        // Message de confirmation et redirection vers l'accueil
+        session_start();
+        $_SESSION['success'] = 'Vous avez été déconnecté avec succès';
+        $this->redirect('/');
     }
 
     private function validateRegistration(array $data): void
@@ -105,4 +147,4 @@ class AuthController
         header("Location: $path");
         exit();
     }
-} 
+}
