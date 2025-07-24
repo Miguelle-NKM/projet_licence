@@ -83,7 +83,7 @@ try {
                                 'email' => $email,
                                 'password' => $password
                             ]);
-                            
+
                             $_SESSION['user_id'] = $user->getId();
                             $_SESSION['user_role'] = $user->getRole();
                             $_SESSION['user_email'] = $user->getEmail();
@@ -118,7 +118,7 @@ try {
             try {
                 $authService = new App\Services\AuthService();
                 $authService->logout();
-                
+
                 session_start();
                 $_SESSION['success'] = 'Vous avez été déconnecté avec succès';
                 header('Location: /');
